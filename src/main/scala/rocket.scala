@@ -9,6 +9,7 @@ import freechips.rocketchip.devices.tilelink._
 import freechips.rocketchip.tile.{BuildRoCC, OpcodeSet}
 import freechips.rocketchip.util.DontTouch
 import freechips.rocketchip.system._
+import leChiffre.{BuildChiffre, ChiffreParameters, LeChiffre}
 
 class RocketSystem(implicit p: Parameters) extends RocketSubsystem
     with HasAsyncExtInterrupts
@@ -36,6 +37,15 @@ class WithGemmini(mesh_size: Int, bus_bits: Int) extends Config((site, here, up)
   )
   case SystemBusKey => up(SystemBusKey).copy(beatBytes = bus_bits/8)
 })
+
+class WithLeChiffre extends Config ((site, here, up) => {
+    case BuildChiffre => ChiffreParameters()
+    case BuildRoCC => List(
+      (p: Parameters) => {
+        val chiffre = LazyModule(new LeChiffre(OpcodeSet.custom2, "main")(p))
+        chiffre
+      })
+  })
 
 class WithDebugProgBuf(prog_buf_words: Int, imp_break: Boolean) extends Config((site, here, up) => {
   case DebugModuleKey => up(DebugModuleKey, site).map(_.copy(nProgramBufferWords = prog_buf_words, hasImplicitEbreak = imp_break))
@@ -392,3 +402,11 @@ class Rocket64z2m extends Config(
   new boom.common.WithNMegaBooms(2) ++
   new WithExtMemSize(0x3f80000000L) ++
   new RocketWideBusConfig)
+
+class Rocket64b1gem4Chiffre extends Config(
+    new WithGemmini(4, 64)  ++
+    new WithInclusiveCache  ++
+    new WithNBreakpoints(8) ++
+    new WithNBigCores(1)    ++
+    new WithLeChiffre ++
+    new RocketBaseConfig)

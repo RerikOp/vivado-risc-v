@@ -5,10 +5,12 @@ lazy val commonSettings = Seq(
   version := "1.0",
   scalaVersion := "2.13.10",
   parallelExecution in Global := false,
-  scalacOptions ++= Seq("-deprecation","-unchecked"),
+  scalacOptions ++= Seq("-deprecation", "-unchecked"),
   addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
   libraryDependencies ++= Seq("edu.berkeley.cs" %% "chisel3" % chiselVersion),
-  libraryDependencies ++= Seq("org.json4s" %% "json4s-jackson" % "4.0.5"))
+  libraryDependencies ++= Seq("org.json4s" %% "json4s-jackson" % "4.0.5"),
+  libraryDependencies ++= Seq("com.ibm" %% "chiffre" % "0.1-SNAPSHOT")
+)
 
 lazy val vivado = (project in file("."))
   .dependsOn(cde)
@@ -73,3 +75,4 @@ lazy val targetutils = (project in file("generators/targetutils"))
 lazy val cde = (project in file("rocket-chip/cde"))
   .settings(commonSettings)
   .settings(scalaSource in Compile := baseDirectory.value / "cde/src/chipsalliance/rocketchip")
+
