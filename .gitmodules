@@ -22,6 +22,3 @@
 [submodule "opensbi"]
 	path = opensbi
 	url = https://github.com/riscv/opensbi.git
-[submodule "rocket-chip"]
-	path = rocket-chip
-	url = git@github.com:RerikOp/rocket-chip.git
